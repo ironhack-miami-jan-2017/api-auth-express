@@ -107,5 +107,33 @@ authRoutes.post('/login', (req, res, next) => {
 //   })(req, res, next);
 // });
 
+authRoutes.post('/logout', (req, res, next) => {
+  req.logout();
+  res.status(200).json({ message: 'Success.' });
+});
+
+authRoutes.get('/loggedin', (req, res, next) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json(req.user);
+    return;
+  }
+
+  res.status(401).json({ message: 'Unauthorized.' });
+});
+
+
+function gtfoIfNotLogged (req, res, next) {
+  if (!req.isAuthenticated()) {
+    res.status(403).json({ message: 'FORBIDDEN.' });
+    return;
+  }
+
+  next();
+}
+
+authRoutes.get('/private', gtfoIfNotLogged, (req, res, next) => {
+  res.json({ message: 'Todays lucky number is 7677' });
+});
+
 
 module.exports = authRoutes;
