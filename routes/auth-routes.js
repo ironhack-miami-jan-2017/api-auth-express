@@ -55,5 +55,57 @@ authRoutes.post('/signup', (req, res, next) => {
   });
 });
 
+// ------------ LOGIN OPTION A ------------
+authRoutes.post('/login', (req, res, next) => {
+  const passportFunction = passport.authenticate('local',
+    (err, theUser, failureDetails) => {
+      if (err) {
+        res.status(500).json({ message: 'Something went wrong.' });
+        return;
+      }
+
+      if (!theUser) {
+        res.status(401).json(failureDetails);
+        return;
+      }
+
+      req.login(theUser, (err) => {
+        if (err) {
+          res.status(500).json({ message: 'Something went wrong.' });
+          return;
+        }
+
+        res.status(200).json(req.user);
+      });
+    }
+  );
+
+  passportFunction(req, res, next);
+});
+
+// ------------ LOGIN OPTION B ------------
+// authRoutes.post('/login', (req, res, next) => {
+//   passport.authenticate('local', (err, theUser, failureDetails) => {
+//     if (err) {
+//       res.status(500).json({ message: 'Something went wrong.' });
+//       return;
+//     }
+//
+//     if (!theUser) {
+//       res.status(401).json(failureDetails);
+//       return;
+//     }
+//
+//     req.login(theUser, (err) => {
+//       if (err) {
+//         res.status(500).json({ message: 'Something went wrong.' });
+//         return;
+//       }
+//
+//       res.status(200).json(req.user);
+//     });
+//   })(req, res, next);
+// });
+
 
 module.exports = authRoutes;
